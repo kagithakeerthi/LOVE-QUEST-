@@ -3,7 +3,7 @@ const timerEl = document.getElementById("timer");
 const scoreEl = document.getElementById("score");
 const popup = document.getElementById("popup");
 
-let timer = 80;
+let timer = 70;
 let score = 0;
 const totalPairs = 12;
 
@@ -102,6 +102,7 @@ function endGame(win){
   }
 
 }
+
 
 
 
