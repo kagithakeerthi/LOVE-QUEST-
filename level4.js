@@ -102,3 +102,29 @@ function endGame(win){
   }
 
 }
+let startX = 0;
+let startY = 0;
+
+maze.addEventListener("touchstart", (e) => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+});
+
+maze.addEventListener("touchend", (e) => {
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+
+    const dx = endX - startX;
+    const dy = endY - startY;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+        // horizontal swipe
+        if (dx > 0) tryMove(0, 1);  // swipe right
+        else tryMove(0, -1);       // swipe left
+    } else {
+        // vertical swipe
+        if (dy > 0) tryMove(1, 0);  // swipe down
+        else tryMove(-1, 0);       // swipe up
+    }
+});
+
