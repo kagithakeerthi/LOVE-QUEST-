@@ -3,7 +3,7 @@ const timerEl = document.getElementById("timer");
 const scoreEl = document.getElementById("score");
 const popup = document.getElementById("popup");
 
-let timer = 60;
+let timer = 90;
 let score = 0;
 const totalPairs = 12;
 
@@ -100,4 +100,5 @@ function endGame(win){
     popup.classList.remove("hidden");
     setTimeout(()=> window.location.reload(),3000);
   }
+
 }
