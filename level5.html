@@ -1,38 +1,372 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Love Maze Escape</title>
-    <link rel="stylesheet" href="level5.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Level 5 — Cute Maze (7×7)</title>
+  <style>
+    :root{
+      --bg:#fff7fb;
+      --cell:#ffeef7;
+      --wall:#ff4d9e;
+      --player:#fff0f7;
+      --goal:#ffd6e8;
+      --accent:#ff7bb1;
+      --shadow: 0 6px 18px rgba(255,77,158,0.12);
+      font-family: 'Poppins', sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: linear-gradient(180deg,#fff7fb 0%, #ffeef9 100%);
+      padding:18px;
+      color:#2b1b25;
+    }
+
+    .container{
+      width: 100%;
+      max-width:460px;
+      background: white;
+      border-radius:18px;
+      padding:16px;
+      box-shadow: var(--shadow);
+      text-align:center;
+    }
+
+    h1{
+      margin:6px 0 10px;
+      font-size:20px;
+      color:#2b1b25;
+      letter-spacing:0.4px;
+    }
+    .sub{
+      font-size:13px;color:#6b4758;margin-bottom:12px;
+    }
+
+    /* Maze grid */
+    #maze{
+      display:grid;
+      gap:8px;
+      margin: 0 auto;
+      touch-action: none; /* helps swipe handling */
+      user-select: none;
+      -webkit-user-select: none;
+      width: 98%;
+      max-width:380px;
+      margin-bottom:14px;
+    }
+
+    /* We'll set grid-template-columns dynamically with JS,
+       but provide fallback */
+    .cell{
+      width:100%;
+      padding-top:100%; /* square cells using aspect-ratio trick */
+      position:relative;
+      border-radius:8px;
+      overflow:hidden;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+      background: var(--cell);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+    }
+    .cell .inner{
+      position:absolute; inset:6px; border-radius:6px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:18px;color:#6b4758;font-weight:600;
+    }
+
+    .wall .inner{ background: linear-gradient(180deg,var(--wall), #e73b8d); color: white; }
+    .goal .inner{ background: linear-gradient(180deg, #fff1f6, var(--goal)); border:2px dashed #ff9ec6; color:#ad2e60; }
+    .player .inner{ background: radial-gradient(circle at 30% 20%, #fff, #ffdff0); border:2px solid #ffb3d1; transform: scale(0.98); box-shadow: 0 6px 12px rgba(255,123,177,0.12); }
+
+    /* small labels overlay (optional) */
+    .cell .inner span { pointer-events:none; }
+
+    /* Controls */
+    .controls{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+      margin-top:4px;
+    }
+    .up, .down, .left, .right{
+      width:64px;height:64px;border-radius:14px;border:none;
+      font-size:22px;background:linear-gradient(180deg,#ffb7d6,#ff8ab3);
+      color:white;box-shadow:0 8px 18px rgba(255,75,138,0.18);
+    }
+    .middle-row{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .left, .right { width:64px;height:64px; }
+
+    /* Popup */
+    #popup{
+      position:fixed;
+      left:50%;top:50%;
+      transform:translate(-50%,-50%) scale(0.98);
+      background: white; padding:18px 22px; border-radius:14px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+      display:none; z-index:999;
+      text-align:center;
+    }
+    #popup h2{ margin:0 0 8px; color:#b21f57; }
+    #popup p{ margin:0 0 12px; color:#5b2f42; }
+    #popup button{ background:linear-gradient(180deg,#ff7bb1,#ff5b98); color:white;border:none;padding:10px 14px;border-radius:10px; font-weight:600; cursor:pointer; }
+
+    /* Responsive tweaks */
+    @media (max-width:420px){
+      .container{ padding:12px; max-width:360px; }
+      .controls{ gap:8px; }
+    }
+  </style>
 </head>
 <body>
+  <div class="container" role="application" aria-label="Level 5 maze">
+    <h1>🌸 Level 5 — Cute Maze (7×7)</h1>
+    <div class="sub">Use arrows, swipe, or keyboard ► Reach the pink goal 💖</div>
 
-    <h1 class="title">💗 Love Maze Escape 💗</h1>
-    <p class="sub">Help the little heart reach <span class="you">YOU ❤</span></p>
+    <!-- Maze grid (JS will set CSS grid columns) -->
+    <div id="maze" aria-live="polite"></div>
 
-    <div id="maze"></div>
-
-    <p class="instruction">Use Arrow Keys to Move ➡⬅⬆⬇</p>
-
-    <div id="popup" class="hidden">
-        <div class="popup-content">
-            <h2>Yay Kittu! 💖</h2>
-            <p>You successfully escaped the maze to reach ME! 😌✨</p>
-            <button onclick="location.href='level6.html'">Next Level ➜</button>
-            
-        </div>
+    <!-- Mobile/desktop controls -->
+    <div class="controls" aria-hidden="false">
+      <button class="up" aria-label="Up">⬆</button>
+      <div class="middle-row">
+        <button class="left" aria-label="Left">⬅</button>
+        <button class="right" aria-label="Right">➡</button>
+      </div>
+      <button class="down" aria-label="Down">⬇</button>
     </div>
-    <div id="mobile-controls">
-    <button class="arrow up">⬆</button>
-    <div class="middle-row">
-        <button class="arrow left">⬅</button>
-        <button class="arrow down">⬇</button>
-        <button class="arrow right">➡</button>
-    </div>
-</div>
+  </div>
 
-    <script src="level5.js"></script>
+  <!-- Win popup -->
+  <div id="popup" role="dialog" aria-modal="true" aria-hidden="true">
+    <h2>🎉 You finished Level 5!</h2>
+    <p>Super job Kittu — you reached the goal 💗</p>
+    <button id="nextLevelBtn">Next Level</button>
+  </div>
+
+  <script>
+  // -------------- FULL GAME JS --------------
+  (function () {
+    // Maze Layout: 0 = empty path, 1 = wall
+    const mazeLayout = [
+      [0,1,1,1,1,1,1],
+      [0,0,0,0,1,0,1],
+      [1,0,1,0,1,0,1],
+      [1,0,1,0,0,0,0],
+      [1,0,1,1,1,1,0],
+      [1,0,0,0,0,0,0],
+      [1,1,1,1,1,0,0] // Goal at (6,6)
+    ];
+
+    const ROWS = mazeLayout.length;
+    const COLS = mazeLayout[0].length;
+
+    const maze = document.getElementById('maze');
+    const popup = document.getElementById('popup');
+    const nextLevelBtn = document.getElementById('nextLevelBtn');
+
+    // grid cells reference
+    const cellEls = Array.from({length: ROWS}, () => Array(COLS).fill(null));
+
+    // starting player - first empty cell (not goal)
+    function findStart() {
+      for (let r = 0; r < ROWS; r++){
+        for (let c = 0; c < COLS; c++){
+          if (mazeLayout[r][c] === 0 && !(r === ROWS-1 && c === COLS-1)) {
+            return { r, c };
+          }
+        }
+      }
+      return { r: 0, c: 0 };
+    }
+
+    let player = findStart();
+    const goal = { r: ROWS - 1, c: COLS - 1 };
+
+    // move counter and started flag
+    let movesCount = 0;
+    let gameStarted = false;
+
+    // build grid UI
+    function buildGrid() {
+      // set grid columns
+      maze.style.gridTemplateColumns = repeat(${COLS}, 1fr);
+      maze.innerHTML = '';
+
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.r = r;
+          cell.dataset.c = c;
+
+          const inner = document.createElement('div');
+          inner.className = 'inner';
+          // optional small label for debugging / style (commented)
+          // inner.textContent = ${r},${c};
+
+          if (mazeLayout[r][c] === 1) cell.classList.add('wall');
+          if (r === goal.r && c === goal.c) cell.classList.add('goal');
+
+          cell.appendChild(inner);
+          maze.appendChild(cell);
+          cellEls[r][c] = cell;
+        }
+      }
+    }
+
+    function placePlayer() {
+      // remove previous
+      for (let r=0;r<ROWS;r++){
+        for (let c=0;c<COLS;c++){
+          const el = cellEls[r][c];
+          if (el) el.classList.remove('player');
+        }
+      }
+      const current = cellEls[player.r] && cellEls[player.r][player.c];
+      if (current) current.classList.add('player');
+    }
+
+    function inBounds(r,c){
+      return r >= 0 && r < ROWS && c >= 0 && c < COLS;
+    }
+
+    // main move
+    function tryMove(dr, dc) {
+      const newR = player.r + dr;
+      const newC = player.c + dc;
+      if (!inBounds(newR, newC)) return;
+      if (mazeLayout[newR][newC] === 1) return; // wall blocks
+
+      // valid move
+      gameStarted = true;
+      movesCount++;
+      movePlayer(newR, newC);
+    }
+
+    function movePlayer(newR, newC) {
+      player.r = newR;
+      player.c = newC;
+      placePlayer();
+
+      // win condition
+      if (newR === goal.r && newC === goal.c) {
+        showWin();
+      }
+    }
+
+    // popup
+    function showWin(){
+      popup.style.display = 'block';
+      popup.setAttribute('aria-hidden','false');
+    }
+    function hideWin(){
+      popup.style.display = 'none';
+      popup.setAttribute('aria-hidden','true');
+    }
+
+    // init
+    function init() {
+      buildGrid();
+      // safety: if player somehow on goal, reset to safe start
+      if (player.r === goal.r && player.c === goal.c) player = findStart();
+      placePlayer();
+      hideWin();
+
+      // keyboard
+      document.removeEventListener('keydown', onKeydown);
+      document.addEventListener('keydown', onKeydown);
+
+      // buttons
+      const upBtn = document.querySelector('.up');
+      const downBtn = document.querySelector('.down');
+      const leftBtn = document.querySelector('.left');
+      const rightBtn = document.querySelector('.right');
+
+      // remove previous listeners safely (if re-init)
+      if (upBtn) { upBtn.replaceWith(upBtn.cloneNode(true)); }
+      if (downBtn) { downBtn.replaceWith(downBtn.cloneNode(true)); }
+      if (leftBtn) { leftBtn.replaceWith(leftBtn.cloneNode(true)); }
+      if (rightBtn) { rightBtn.replaceWith(rightBtn.cloneNode(true)); }
+
+      // re-query after clone
+      const up = document.querySelector('.up');
+      const down = document.querySelector('.down');
+      const left = document.querySelector('.left');
+      const right = document.querySelector('.right');
+
+      up && up.addEventListener('click', () => tryMove(-1, 0));
+      down && down.addEventListener('click', () => tryMove(1, 0));
+      left && left.addEventListener('click', () => tryMove(0, -1));
+      right && right.addEventListener('click', () => tryMove(0, 1));
+
+      // swipe gestures
+      let sx = 0, sy = 0;
+      maze.addEventListener('touchstart', (e) => {
+        const t = e.touches[0];
+        sx = t.clientX; sy = t.clientY;
+      }, { passive: true });
+
+      maze.addEventListener('touchend', (e) => {
+        const t = e.changedTouches[0];
+        const ex = t.clientX; const ey = t.clientY;
+        const dx = ex - sx; const dy = ey - sy;
+
+        // threshold to avoid tiny accidental swipes
+        const threshold = 22;
+        if (Math.abs(dx) > Math.abs(dy)) {
+          if (dx > threshold) tryMove(0, 1);
+          else if (dx < -threshold) tryMove(0, -1);
+        } else {
+          if (dy > threshold) tryMove(1, 0);
+          else if (dy < -threshold) tryMove(-1, 0);
+        }
+      }, { passive: true });
+
+      // Next Level button (for demo, it just resets)
+      nextLevelBtn && nextLevelBtn.addEventListener('click', () => {
+        // For now just reset the level — in your app you can load the next HTML
+        hideWin();
+        player = findStart();
+        movesCount = 0;
+        gameStarted = false;
+        placePlayer();
+      });
+    }
+
+    // keyboard handler named so it can be removed
+    function onKeydown(e) {
+      if (e.key === 'ArrowUp') tryMove(-1, 0);
+      else if (e.key === 'ArrowDown') tryMove(1, 0);
+      else if (e.key === 'ArrowLeft') tryMove(0, -1);
+      else if (e.key === 'ArrowRight') tryMove(0, 1);
+    }
+
+    // start after DOM ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    // expose for debugging (optional)
+    window.__maze = {
+      layout: mazeLayout,
+      player,
+      tryMove,
+      reset: () => { player = findStart(); movesCount = 0; gameStarted=false; placePlayer(); hideWin(); }
+    };
+
+  })();
+  </script>
 </body>
-
 </html>
+
