@@ -114,3 +114,8 @@ body {
 .arrow:active {
     transform: scale(0.9);
 }
+.player {
+    background: pink;
+    border: 2px solid #ff66b3;
+}
+
