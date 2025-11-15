@@ -182,3 +182,52 @@ maze.addEventListener("touchend", (e) => {
         else tryMove(-1, 0);       // swipe up
     }
 });
+// TryMove function (used by both buttons + swipe)
+function tryMove(dr, dc) {
+    const newR = player.r + dr;
+    const newC = player.c + dc;
+
+    if (!inBounds(newR, newC)) return;
+    if (mazeLayout[newR][newC] !== 0) return;
+
+    movesCount++;
+    movePlayer(newR, newC);
+}
+
+// ----------------------------
+// MOBILE ARROW BUTTONS
+// ----------------------------
+document.querySelector(".up").addEventListener("click", () => tryMove(-1, 0));
+document.querySelector(".down").addEventListener("click", () => tryMove(1, 0));
+document.querySelector(".left").addEventListener("click", () => tryMove(0, -1));
+document.querySelector(".right").addEventListener("click", () => tryMove(0, 1));
+
+
+// ----------------------------
+// SWIPE GESTURES FIXED
+// ----------------------------
+let startX = 0;
+let startY = 0;
+
+maze.addEventListener("touchstart", (e) => {
+    const t = e.touches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+});
+
+maze.addEventListener("touchend", (e) => {
+    const t = e.changedTouches[0];
+    const endX = t.clientX;
+    const endY = t.clientY;
+
+    const dx = endX - startX;
+    const dy = endY - startY;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 20) tryMove(0, 1);   // right
+        else if (dx < -20) tryMove(0, -1); // left
+    } else {
+        if (dy > 20) tryMove(1, 0);   // down
+        else if (dy < -20) tryMove(-1, 0); // up
+    }
+});
