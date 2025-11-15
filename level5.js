@@ -1,233 +1,135 @@
-// Maze Layout: 0 = empty, 1 = wall
-// 8x8 cute mini maze
+// ------------------- MAZE GAME FULL JS ---------------------
+
+let maze, playerEl;
+
+// Maze layout: 0 = path, 1 = wall
 const mazeLayout = [
-    [0,1,1,1,1,1,1,1],
-    [0,0,0,0,1,0,0,1],
-    [1,0,1,0,1,0,1,1],
-    [1,0,1,0,0,0,0,0],
-    [1,0,1,1,1,1,1,0],
-    [1,0,0,0,0,0,1,0],
-    [1,1,1,1,1,0,1,0],
-    [1,1,1,1,1,0,0,0] // Goal at (7,7)
+    [0, 1, 0, 0, 0],
+    [0, 1, 0, 1, 0],
+    [0, 0, 0, 1, 0],
+    [1, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0]
 ];
 
-const ROWS = mazeLayout.length;
-const COLS = mazeLayout[0].length;
+// Player starting position
+let player = { r: 0, c: 0 };
 
-// Maze Container
-const maze = document.getElementById("maze");
-const popup = document.getElementById("popup");
+// Goal position
+const goal = { r: 4, c: 4 };
 
-// hide popup at start (robust)
-if (popup) {
-    popup.classList.add("hidden");
-    popup.style.display = "none";
-}
+// Move counter
+let movesCount = 0;
 
-if (!maze) {
-    console.error("Maze container (#maze) not found in DOM.");
-} else {
-    // Clear any existing content (useful during hot-reload)
+
+// ------------------- INIT GAME ---------------------
+window.onload = function () {
+    maze = document.getElementById("maze");
+    generateMaze();
+    placePlayer(player.r, player.c);
+};
+
+// Create the maze UI
+function generateMaze() {
     maze.innerHTML = "";
-}
+    for (let r = 0; r < mazeLayout.length; r++) {
+        for (let c = 0; c < mazeLayout[0].length; c++) {
+            const cell = document.createElement("div");
+            cell.className = "cell";
 
-// keep a 2D array of cell elements for safe access
-const cellEls = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
-
-// Create Maze Grid (do NOT mark player here)
-mazeLayout.forEach((row, r) => {
-    row.forEach((cell, c) => {
-        const div = document.createElement("div");
-        div.classList.add("cell");
-        div.dataset.r = r;
-        div.dataset.c = c;
-        if (cell === 1) div.classList.add("wall");
-        if (r === ROWS - 1 && c === COLS - 1) div.classList.add("goal");
-        if (maze) maze.appendChild(div);
-        cellEls[r][c] = div;
-    });
-});
-
-// find a safe starting cell (first empty cell that's not the goal)
-function findStart() {
-    for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-            if (mazeLayout[r][c] === 0 && !(r === ROWS - 1 && c === COLS - 1)) {
-                return { r, c };
+            if (mazeLayout[r][c] === 1) {
+                cell.classList.add("wall");
             }
+            if (r === goal.r && c === goal.c) {
+                cell.classList.add("goal");
+            }
+
+            cell.id = cell-${r}-${c};
+            maze.appendChild(cell);
         }
     }
-    // fallback to any non-wall cell
-    for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-            if (mazeLayout[r][c] === 0) return { r, c };
-        }
-    }
-    // final fallback
-    return { r: 0, c: 0 };
 }
 
-// Player Position (initialized to safe start)
-let player = findStart();
-
-// place player class on DOM
-function placePlayer() {
-    // clear any previous player classes
-    for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-            const el = cellEls[r][c];
-            if (el) el.classList.remove("player");
-        }
+// Place player in UI
+function placePlayer(r, c) {
+    if (playerEl) {
+        playerEl.classList.remove("player");
     }
-    const startCell = cellEls[player.r] && cellEls[player.r][player.c];
-    if (startCell) startCell.classList.add("player");
+    const cell = document.getElementById(cell-${r}-${c});
+    cell.classList.add("player");
+    playerEl = cell;
 }
 
-// initialize player on the grid
-placePlayer();
-
-// Utility: check if position is inside maze
+// Check maze boundaries
 function inBounds(r, c) {
-    return r >= 0 && r < ROWS && c >= 0 && c < COLS;
+    return r >= 0 && r < mazeLayout.length && c >= 0 && c < mazeLayout[0].length;
 }
 
-// Only mark the game as started after the first valid move
-let gameStarted = false;
-let movesCount = 0; // explicit move counter
-
-// Movement handler (named so it can be removed if needed)
-function handleKeydown(e) {
-    // ignore if maze not present
-    if (!maze) return;
-
-    let newR = player.r;
-    let newC = player.c;
-
-    if (e.key === "ArrowUp") newR--;
-    else if (e.key === "ArrowDown") newR++;
-    else if (e.key === "ArrowLeft") newC--;
-    else if (e.key === "ArrowRight") newC++;
-    else return;
-
-    // Bounds + wall check
-    if (!inBounds(newR, newC)) return;
-    if (mazeLayout[newR][newC] !== 0) return; // blocked (wall)
-
-    // valid movement -> mark game started and move
-    gameStarted = true;
-    movesCount++;
-    movePlayer(newR, newC);
-}
-
-// ensure we don't add multiple listeners
-document.removeEventListener("keydown", handleKeydown);
-document.addEventListener("keydown", handleKeydown);
-
-// Move Player Function
-function movePlayer(newR, newC) {
-    // guard against invalid indices
-    if (!inBounds(newR, newC)) return;
-
-    const oldCell = cellEls[player.r] && cellEls[player.r][player.c];
-    const newCell = cellEls[newR] && cellEls[newR][newC];
-
-    if (oldCell) oldCell.classList.remove("player");
-    if (newCell) newCell.classList.add("player");
-
-    // Update position
-    player.r = newR;
-    player.c = newC;
-
-    // Check win only after the game has actually started via movement
-    // require at least one move (movesCount > 0) to avoid auto-win on load
-    if (movesCount > 0 && player.r === ROWS - 1 && player.c === COLS - 1) {
-        if (popup) {
-            popup.classList.remove("hidden");
-            popup.style.display = "block";
-        } else {
-            // fallback: simple alert
-            alert("You reached the goal! 🎉");
-        }
-    }
-}
-
-// Safety: if for any reason player was placed on goal, move them to a safe start
-if (player.r === ROWS - 1 && player.c === COLS - 1) {
-    player = findStart();
-    placePlayer();
-
-}
-let startX = 0;
-let startY = 0;
-
-maze.addEventListener("touchstart", (e) => {
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-});
-
-maze.addEventListener("touchend", (e) => {
-    const endX = e.changedTouches[0].clientX;
-    const endY = e.changedTouches[0].clientY;
-
-    const dx = endX - startX;
-    const dy = endY - startY;
-
-    if (Math.abs(dx) > Math.abs(dy)) {
-        // horizontal swipe
-        if (dx > 0) tryMove(0, 1);  // swipe right
-        else tryMove(0, -1);       // swipe left
-    } else {
-        // vertical swipe
-        if (dy > 0) tryMove(1, 0);  // swipe down
-        else tryMove(-1, 0);       // swipe up
-    }
-});
-// TryMove function (used by both buttons + swipe)
+// Main movement function
 function tryMove(dr, dc) {
     const newR = player.r + dr;
     const newC = player.c + dc;
 
     if (!inBounds(newR, newC)) return;
-    if (mazeLayout[newR][newC] !== 0) return;
+    if (mazeLayout[newR][newC] !== 0 && !(newR === goal.r && newC === goal.c)) return;
 
     movesCount++;
     movePlayer(newR, newC);
 }
 
-// ----------------------------
-// MOBILE ARROW BUTTONS
-// ----------------------------
+// Move player and check for win
+function movePlayer(newR, newC) {
+    player.r = newR;
+    player.c = newC;
+    placePlayer(newR, newC);
+
+    if (newR === goal.r && newC === goal.c) {
+        setTimeout(() => {
+            alert("💗 Congratulations Kittu! You completed the maze! 💗");
+        }, 100);
+    }
+}
+
+
+// ------------------- KEYBOARD CONTROLS ---------------------
+document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowUp") tryMove(-1, 0);
+    if (e.key === "ArrowDown") tryMove(1, 0);
+    if (e.key === "ArrowLeft") tryMove(0, -1);
+    if (e.key === "ArrowRight") tryMove(0, 1);
+});
+
+
+// ------------------- BUTTON CONTROLS ---------------------
 document.querySelector(".up").addEventListener("click", () => tryMove(-1, 0));
 document.querySelector(".down").addEventListener("click", () => tryMove(1, 0));
 document.querySelector(".left").addEventListener("click", () => tryMove(0, -1));
 document.querySelector(".right").addEventListener("click", () => tryMove(0, 1));
 
 
-// ----------------------------
-// SWIPE GESTURES FIXED
-// ----------------------------
-let startX = 0;
-let startY = 0;
+// ------------------- SWIPE CONTROLS (MOBILE) ---------------------
+let sx = 0, sy = 0;
 
 maze.addEventListener("touchstart", (e) => {
-    const t = e.touches[0];
-    startX = t.clientX;
-    startY = t.clientY;
-});
+    sx = e.touches[0].clientX;
+    sy = e.touches[0].clientY;
+}, { passive: true });
 
 maze.addEventListener("touchend", (e) => {
-    const t = e.changedTouches[0];
-    const endX = t.clientX;
-    const endY = t.clientY;
+    const ex = e.changedTouches[0].clientX;
+    const ey = e.changedTouches[0].clientY;
 
-    const dx = endX - startX;
-    const dy = endY - startY;
+    const dx = ex - sx;
+    const dy = ey - sy;
 
     if (Math.abs(dx) > Math.abs(dy)) {
-        if (dx > 20) tryMove(0, 1);   // right
-        else if (dx < -20) tryMove(0, -1); // left
+        if (dx > 25) tryMove(0, 1);      // swipe right
+        else if (dx < -25) tryMove(0, -1); // left
     } else {
-        if (dy > 20) tryMove(1, 0);   // down
-        else if (dy < -20) tryMove(-1, 0); // up
+        if (dy > 25) tryMove(1, 0);      // down
+        else if (dy < -25) tryMove(-1, 0); // up
     }
-});
+}, { passive: true });
+
+
+// ------------------- END OF FILE ---------------------
+
