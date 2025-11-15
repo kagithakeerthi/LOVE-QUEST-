@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Hacker Challenge</title>
+    <link rel="stylesheet" href="level6.css">
+</head>
+<body>
+
+<h1 class="title">❤ Love Hacker Challenge ❤</h1>
+<p class="subtitle">Hack my heart by solving all 3 puzzles, Kittu 💗</p>
+
+<div id="gameArea">
+
+    <!-- Puzzle 1: Pattern Unlock -->
+    <div class="puzzle" id="puzzle1">
+        <h2>🔐 Puzzle 1: Pattern Unlock</h2>
+        <p class="tips">Tap the correct 4-dot pattern!</p>
+        <p class="hint">💡 Hint: Try tapping dots to form a heart shape cutie💓!</p>
+
+        <div id="patternGrid">
+            <div class="dot" data-id="1"></div>
+            <div class="dot" data-id="2"></div>
+            <div class="dot" data-id="3"></div>
+            <div class="dot" data-id="4"></div>
+            <div class="dot" data-id="5"></div>
+            <div class="dot" data-id="6"></div>
+            <div class="dot" data-id="7"></div>
+            <div class="dot" data-id="8"></div>
+            <div class="dot" data-id="9"></div>
+        </div>
+
+        <button id="checkPattern">Unlock</button>
+        <p class="status" id="patternStatus"></p>
+    </div>
+
+    <!-- Puzzle 2: Code Lock -->
+    <div class="puzzle" id="puzzle2" style="display:none;">
+        <h2>🔢 Puzzle 2: Crack the Code</h2>
+        <p class="tips">Hint: (5 + 7) * 3 = ?</p>
+
+        <input type="number" id="codeInput" placeholder="Enter Code">
+        <button id="checkCode">Submit</button>
+        <p class="status" id="codeStatus"></p>
+    </div>
+
+    <!-- Puzzle 3: Symbol Match -->
+    <div class="puzzle" id="puzzle3" style="display:none;">
+        <h2>💞 Puzzle 3: Match the Symbols</h2>
+        <p class="tips">Choose the matching pair!</p>
+
+        <div id="symbolGrid">
+            <div class="card" data-symbol="❤">❓</div>
+            <div class="card" data-symbol="💙">❓</div>
+            <div class="card" data-symbol="❤">❓</div>
+            <div class="card" data-symbol="💙">❓</div>
+        </div>
+
+        <p class="status" id="matchStatus"></p>
+    </div>
+
+</div>
+
+<script src="level6.js"></script>
+
+</body>
+</html>

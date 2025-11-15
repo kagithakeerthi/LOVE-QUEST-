@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ffb6c1, #ffe6f2);
+  font-family: 'Poppins', sans-serif;
+}
+
+.game-container {
+  text-align: center;
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.title {
+  font-size: 1.8rem;
+  color: #d63384;
+  margin: 20px 0;
+}
+
+.info {
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  margin-bottom: 10px;
+}
+
+#gameArea {
+  position: relative;
+  height: 70vh;
+}
+
+.heart {
+  position: absolute;
+  font-size: 2rem;
+}
+
+#bucketWrapper {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#bucket {
+  width: 140px;
+  height: 100px;
+  background: linear-gradient(135deg, #ff69b4 0%, #ff1493 50%, #c71585 100%);
+  border: 4px solid #8b0a50;
+  border-radius: 0 0 50px 50px;
+  box-shadow: inset 0 4px 8px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+#score {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #d63384;
+}
+
+#popup {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255,255,255,0.8);
+  color: #d63384;
+  padding: 20px 30px;
+  border-radius: 20px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.hidden { display: none; }
+
+@keyframes fall {
+  from { top: -40px; }
+  to { top: 90%; }
+}

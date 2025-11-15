@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ffe6f2, #ffd6e8);
+  font-family: 'Poppins', sans-serif;
+}
+
+.game-container {
+  text-align: center;
+  position: relative;
+  height: 100vh;
+  padding: 20px;
+}
+
+.title {
+  font-size: 1.8rem;
+  color: #d63384;
+  margin-bottom: 15px;
+}
+
+.info {
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 1.2rem;
+}
+
+#grid {
+  display: grid;
+  grid-template-columns: repeat(5, 70px);
+  grid-template-rows: repeat(5, 70px);
+  gap: 10px;
+  justify-content: center;
+}
+
+.card {
+  width: 70px;
+  height: 70px;
+  background: #ffb6c1;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  cursor: pointer;
+  position: relative;
+  perspective: 600px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+}
+
+.card-front {
+  background: #ffb6c1;
+  color: #fff;
+}
+
+.card-back {
+  background: #d63384;
+  transform: rotateY(180deg);
+  color: #fff;
+}
+
+#popup {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255,255,255,0.85);
+  color: #d63384;
+  padding: 20px 30px;
+  border-radius: 20px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.hidden { display: none; }
+
+@keyframes sparkleAnim {
+  0% { transform: scale(1); color: #d63384; }
+  50% { transform: scale(1.4); color: #ff70b3; }
+  100% { transform: scale(1); color: #d63384; }
+}
+
+.sparkle {
+  animation: sparkleAnim 0.8s ease-in-out;
+}

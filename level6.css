@@ -1,0 +1,96 @@
+body {
+    background: linear-gradient(135deg, #ff8bbd, #ffc1df);
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+}
+
+.title {
+    font-size: 40px;
+    margin-top: 30px;
+    color: #ff1177;
+    text-shadow: 0 0 15px white;
+}
+
+.subtitle {
+    margin-top: -10px;
+    font-size: 20px;
+    color: #ff61a3;
+}
+
+#gameArea {
+    margin-top: 40px;
+}
+
+.puzzle {
+    background: rgba(255, 255, 255, 0.5);
+    padding: 25px;
+    width: 80%;
+    margin: auto;
+    border-radius: 20px;
+    box-shadow: 0 0 20px #fff;
+}
+
+/* PATTERN GRID */
+#patternGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 70px);
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+.dot {
+    width: 70px;
+    height: 70px;
+    background: #ffd2ea;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid #ff57a8;
+}
+.dot.active {
+    background: #ff1188;
+    box-shadow: 0 0 20px #fff;
+}
+
+/* CODE LOCK */
+#codeInput {
+    padding: 10px;
+    font-size: 20px;
+    border-radius: 10px;
+    width: 150px;
+    border: none;
+    margin-top: 15px;
+}
+
+button {
+    margin-top: 20px;
+    padding: 12px 30px;
+    background: #ff5fa4;
+    border: none;
+    color: white;
+    font-size: 18px;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+/* SYMBOL MATCH */
+#symbolGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 60px);
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+.card {
+    background: #ffe0f2;
+    font-size: 30px;
+    padding: 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #fff;
+}
+
+.status {
+    margin-top: 15px;
+    font-size: 22px;
+    color: #ff0066;
+}

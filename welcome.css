@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  background: linear-gradient(135deg, #ffb6c1, #ffe6f7);
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.welcome-container {
+  max-width: 600px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 25px;
+  padding: 40px;
+  box-shadow: 0 0 30px rgba(255, 182, 193, 0.8);
+}
+
+h1 {
+  font-family: 'Dancing Script', cursive;
+  font-size: 2.5em;
+  color: #ff4da6;
+  animation: fadeIn 2s ease-in-out;
+}
+
+.quote {
+  margin: 20px 0;
+  color: #5c0a3d;
+  font-size: 1.2em;
+  line-height: 1.5;
+}
+
+.btn {
+  background-color: #ff4da6;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.1em;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  background-color: #ff80bf;
+  transform: scale(1.1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

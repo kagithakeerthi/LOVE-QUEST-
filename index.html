@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Love Quest — Begin</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="page intro fade-in">
+  <div class="bg-layer"></div>
+
+  <main class="card center">
+    <h1 class="logo">💖 Hey dear... 💖</h1>
+
+    <p class="lead">
+      Close your eyes, take a deep breath and feel the magic.<br>
+      <em class="quote">“Every love story begins with a single heartbeat.”</em>
+    </p>
+
+    <div class="menu">
+      <button id="beginBtn" class="btn big bubble">✨ Begin the Quest ✨</button>
+    </div>
+
+    <p class="small">A tiny magical game — made with love ✨</p>
+  </main>
+
+  <!-- gentle royalty-free instrumental (hosted publicly) - optional -->
+  <audio id="bgMusic" src="https://cdn.pixabay.com/download/audio/2022/10/26/audio_9d2d0b3a61.mp3?filename=relaxing-piano-112601.mp3" loop preload="auto"></audio>
+
+  <script>
+    // small inline to navigate with fade
+    document.getElementById('beginBtn').addEventListener('click', () => {
+      const a = document.getElementById('bgMusic');
+      if (a) a.play().catch(()=>{/* autoplay blocked until interaction — OK */});
+      // fade-out then navigate
+      document.body.classList.add('fade-out');
+      setTimeout(()=> location.href = 'welcome.html', 520);
+    });
+  </script>
+</body>
+</html>
